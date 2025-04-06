@@ -8,7 +8,9 @@ app.use(express.json());
 app.use(cors());
 
 // MongoDB connection
-const MONGO_URI = "mongodb+srv://ritwik9:FbwsJKrqospCeBYv@ritwik.4wyuc.mongodb.net/clickpost?retryWrites=true&w=majority&appName=ritwik";
+const MONGO_URI = process.env.MONGODB_URI;
+
+//const MONGO_URI = "mongodb+srv://ritwik9:FbwsJKrqospCeBYv@ritwik.4wyuc.mongodb.net/clickpost?retryWrites=true&w=majority&appName=ritwik";
 mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("Connected to MongoDB Atlas"))
   .catch((err) => console.error("MongoDB connection error:", err));
@@ -55,25 +57,24 @@ app.post("/api/register", async (req, res) => {
 app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
 
-  // Validate required fields
   if (!email || !password) {
+    console.log("Missing email or password");
     return res.status(400).json({ error: "All fields are required" });
   }
 
   try {
-    // Find the user by email
     const user = await User.findOne({ email });
     if (!user) {
+      console.log(`User with email ${email} not found`);
       return res.status(400).json({ error: "Invalid email or password" });
     }
 
-    // Compare the provided password with the hashed password in the database
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
+      console.log(`Password mismatch for email ${email}`);
       return res.status(400).json({ error: "Invalid email or password" });
     }
 
-    // If login is successful, send a success response
     res.status(200).json({ message: "Login successful" });
   } catch (err) {
     console.error("Error during login:", err);
@@ -82,7 +83,7 @@ app.post("/api/login", async (req, res) => {
 });
 
 // Start the server
-const PORT = process.env.PORT || 3001;
+const PORT = 3001;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
