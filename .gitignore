@@ -1,4 +1,4 @@
-# Node.js dependencies
+# Nodgit add .gitignore.js dependencies
 node_modules/
 
 # Environment variables

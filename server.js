@@ -8,9 +8,9 @@ app.use(express.json());
 app.use(cors());
 
 // MongoDB connection
-const MONGO_URI = process.env.MONGODB_URI;
+const MONGO_URI = process.env.MONGODB_URI || "mongodb+srv://ritwik9:FbwsJKrqospCeBYv@ritwik.4wyuc.mongodb.net/clickpost?retryWrites=true&w=majority&appName=ritwik";
 
-//const MONGO_URI = "mongodb+srv://ritwik9:FbwsJKrqospCeBYv@ritwik.4wyuc.mongodb.net/clickpost?retryWrites=true&w=majority&appName=ritwik";
+
 mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("Connected to MongoDB Atlas"))
   .catch((err) => console.error("MongoDB connection error:", err));
@@ -34,13 +34,11 @@ const User = mongoose.model("User", userSchema);
 app.post("/api/register", async (req, res) => {
   const { email, name, password } = req.body;
 
-  // Validate required fields]
   if (!email || !name || !password) {
     return res.status(400).json({ error: "All fields are required" });
   }
 
   try {
-    // Create a new user
     const newUser = new User({ email, name, password });
     await newUser.save();
     res.status(201).json({ message: "User registered successfully" });
@@ -83,7 +81,7 @@ app.post("/api/login", async (req, res) => {
 });
 
 // Start the server
-const PORT = 3001;
+const PORT = process.env.PORT || 3001; // Use Render's PORT or default to 3001 for local testing
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
